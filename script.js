@@ -24,7 +24,8 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0x000000);
 
 // Crosshair
-const texture = new THREE.TextureLoader().load('crosshair.png');
+const crosshairUrl = new URL('./crosshair.png', import.meta.url).href;
+const texture = new THREE.TextureLoader().load(crosshairUrl);
 const material = new THREE.SpriteMaterial({
   map: texture,
   transparent: true,
