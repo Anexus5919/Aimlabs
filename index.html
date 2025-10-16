@@ -4,12 +4,330 @@
     <meta charset="UTF-8" />
     <title>Aimlabs-Threejs</title>
     <style>
-      body { margin: 0; overflow: hidden; background: #000; }
+      body { margin: 0; overflow: hidden; background: #000; font-family: Arial, sans-serif; }
       canvas.webgl { display: block; }
+
+      /* UI Panel Styles */
+      .ui-panel {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid #fff;
+        border-radius: 10px;
+        padding: 30px;
+        color: white;
+        text-align: center;
+        z-index: 1000;
+      }
+
+      .ui-panel h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 28px;
+      }
+
+      .timer-options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .timer-btn {
+        padding: 15px 30px;
+        font-size: 18px;
+        background: #333;
+        color: white;
+        border: 2px solid #555;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .timer-btn:hover {
+        background: #555;
+        border-color: #777;
+      }
+
+      .custom-input {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .custom-input input {
+        padding: 10px;
+        font-size: 16px;
+        width: 80px;
+        border: 2px solid #555;
+        border-radius: 5px;
+        background: #333;
+        color: white;
+      }
+
+      .custom-input button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background: #007acc;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .custom-input button:hover {
+        background: #005a99;
+      }
+
+      /* Reset Button */
+      .reset-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background: #ff4444;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 1100;
+      }
+
+      .reset-btn:hover {
+        background: #cc3333;
+      }
+
+      /* Timer Display */
+      .timer-display {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        z-index: 100;
+      }
+
+      /* Modal Styles */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+      }
+
+      .modal-content {
+        background: rgba(0, 0, 0, 0.9);
+        border: 2px solid #fff;
+        border-radius: 15px;
+        padding: 40px;
+        color: white;
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+      }
+
+      .modal-content h2 {
+        margin-top: 0;
+        margin-bottom: 30px;
+        font-size: 28px;
+      }
+
+      .stats-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #333;
+      }
+
+      .stat-label {
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .stat-value {
+        font-size: 18px;
+        color: #00ff88;
+        font-weight: bold;
+      }
+
+      .close-btn {
+        padding: 15px 40px;
+        font-size: 18px;
+        background: #007acc;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .close-btn:hover {
+        background: #005a99;
+      }
+
+      /* Difficulty Selection Styles */
+      .difficulty-selection {
+        margin-bottom: 30px;
+      }
+
+      .difficulty-selection h3 {
+        margin-bottom: 15px;
+        font-size: 20px;
+        color: #00ff88;
+      }
+
+      .difficulty-options {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-bottom: 15px;
+      }
+
+      .difficulty-btn {
+        padding: 12px 24px;
+        font-size: 16px;
+        background: #333;
+        color: white;
+        border: 2px solid #555;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 80px;
+      }
+
+      .difficulty-btn:hover {
+        background: #555;
+        border-color: #777;
+      }
+
+      .difficulty-btn.selected {
+        background: #007acc;
+        border-color: #00aaff;
+      }
+
+      .difficulty-info {
+        font-size: 14px;
+        color: #ccc;
+        font-style: italic;
+      }
+
+      .timer-section h3 {
+        margin-bottom: 15px;
+        font-size: 20px;
+        color: #00ff88;
+      }
+
+      /* Cursor Management */
+      .practice-mode-active {
+        cursor: none !important;
+      }
+
+      .practice-mode-active * {
+        cursor: none !important;
+      }
+
+      /* Hidden class */
+      .hidden {
+        display: none !important;
+      }
     </style>
   </head>
   <body>
     <canvas class="webgl"></canvas>
+    
+    <!-- Reset Button -->
+    <button id="resetBtn" class="reset-btn">Reset Score</button>
+    
+    <!-- Practice Mode UI -->
+    <div id="practiceModeUI" class="ui-panel">
+      <h2>Practice Mode</h2>
+      
+      <!-- Difficulty Selection -->
+      <div class="difficulty-selection">
+        <h3>Select Difficulty</h3>
+        <div class="difficulty-options">
+          <button class="difficulty-btn" data-difficulty="easy">Easy</button>
+          <button class="difficulty-btn" data-difficulty="medium">Medium</button>
+          <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+        </div>
+        <div class="difficulty-info">
+          <p id="difficultyDescription">Choose your difficulty level</p>
+        </div>
+      </div>
+      
+      <!-- Timer Options (hidden initially) -->
+      <div id="timerOptions" class="timer-section" style="display: none;">
+        <h3>Select Duration</h3>
+        <div class="timer-options">
+          <button class="timer-btn" data-time="60">1 Minute</button>
+          <button class="timer-btn" data-time="120">2 Minutes</button>
+          <button class="timer-btn" data-time="180">3 Minutes</button>
+          <button id="customTimerBtn" class="timer-btn">Custom</button>
+        </div>
+        <div id="customTimerInput" class="custom-input" style="display: none;">
+          <input type="number" id="customMinutes" placeholder="Minutes" min="1" max="60">
+          <input type="number" id="customSeconds" placeholder="Seconds" min="0" max="59">
+          <button id="startCustomTimer">Start</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Modal -->
+    <div id="statisticsModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h2>Practice Session Results</h2>
+        <div class="stats-container">
+          <div class="stat-item">
+            <span class="stat-label">Final Score:</span>
+            <span id="finalScore" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Session Duration:</span>
+            <span id="sessionDuration" class="stat-value">0:00</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Average Time Between Hits:</span>
+            <span id="avgTimeBetweenHits" class="stat-value">0.00s</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Missed Shots:</span>
+            <span id="missedShots" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Accuracy:</span>
+            <span id="accuracy" class="stat-value">0%</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Shots Per Minute:</span>
+            <span id="shotsPerMinute" class="stat-value">0</span>
+          </div>
+        </div>
+        <button id="closeModal" class="close-btn">Close</button>
+      </div>
+    </div>
+
     <script type="module" src="script.js"></script>
   </body>
 </html>
